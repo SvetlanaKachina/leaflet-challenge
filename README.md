@@ -17,4 +17,6 @@ The USGS is interested in building a new set of tools that will allow them to vi
 *	Created a legend that will provide context for the map data.
 
 ![image](https://github.com/user-attachments/assets/063a033d-9097-4ac0-9f58-9bbf2de784d4)
+![image](https://github.com/user-attachments/assets/4496d5b9-89f6-4e61-8032-4b2840642c10)
+
 
