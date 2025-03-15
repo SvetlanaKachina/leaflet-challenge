@@ -3,16 +3,20 @@ let basemap = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", 
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 });
 
-let myMap = L.map("map", { 
-  center: [45.52, -122.67],
-  zoom: 13,
-  layers: [basemap] // Add the base layer to the map
+// Create the 'topographic' tile layer
+let topographic = L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
+  attribution: "&copy; <a href='https://opentopomap.org/'>OpenTopoMap</a> contributors"
 });
 
-// OPTIONAL: Step 2
-// Create the 'street' tile layer as a second background of the map
-let street = L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
-  attribution: "&copy; <a href='https://opentopomap.org/'>OpenTopoMap</a> contributors"
+// Add an alternative satellite imagery layer
+let satellite = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+  attribution: "&copy; Esri, DigitalGlobe, GeoEye, Earthstar Geographics"
+});
+
+let myMap = L.map("map", { 
+  center: [20, 0], // Adjusted center for global view
+  zoom: 2, // Adjusted zoom level to ensure global earthquake visibility
+  layers: [topographic] // Default layer to match reference image
 });
 
 // Create layer groups for earthquakes and tectonic plates
@@ -21,8 +25,9 @@ let tectonicPlates = L.layerGroup();
 
 // Define baseMaps and overlays
 let baseMaps = {
-  "Street Map": street,
-  "Base Map": basemap
+  "Street Map": basemap,
+  "Topographic Map": topographic,
+  "Satellite Map": satellite
 };
 
 let overlayMaps = {
@@ -33,19 +38,21 @@ let overlayMaps = {
 // Add a control to the map to switch between layers
 L.control.layers(baseMaps, overlayMaps).addTo(myMap);
 
-// Make a request that retrieves the earthquake geoJSON data.
-d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson").then(function (data) {
+// Make a request that retrieves the earthquake GeoJSON data.
+d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geojson")
+.then(function (data) {
+  console.log("Earthquake data loaded:", data); // Debugging line to ensure data loads
 
   // This function returns the style data for each of the earthquakes we plot on
   function styleInfo(feature) {
       return {
           opacity: 1,
-          fillOpacity: 0.75,
+          fillOpacity: 0.6, // Make circles slightly more transparent
           fillColor: getColor(feature.geometry.coordinates[2]),
-          color: "#000000",
+          color: "black", // Add black border for contrast
           radius: getRadius(feature.properties.mag),
           stroke: true,
-          weight: 0.5
+          weight: 0.7
       };
   }
 
@@ -60,10 +67,10 @@ d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geoj
 
   // This function determines the radius of the earthquake marker based on its magnitude.
   function getRadius(magnitude) {
-      return magnitude === 0 ? 1 : magnitude * 4;
+      return magnitude === 0 ? 2 : magnitude * 5; // Slightly increase size for visibility
   }
 
-  // Add a GeoJSON layer to the map once the file is loaded.
+  // Add a GeoJSON layer to the earthquakes layer group
   L.geoJson(data, {
       pointToLayer: function (feature, latlng) {
           return L.circleMarker(latlng);
@@ -110,10 +117,11 @@ d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geoj
 
 // OPTIONAL: Step 2
 // Make a request to get our Tectonic Plate geoJSON data.
-d3.json("https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json").then(function (plate_data) {
+d3.json("https://raw.githubusercontent.com/fraxen/tectonicplates/master/GeoJSON/PB2002_boundaries.json")
+.then(function (plate_data) {
   L.geoJson(plate_data, {
       color: "orange",
-      weight: 2
+      weight: 2.5 // Increase thickness for better visibility
   }).addTo(tectonicPlates);
 
   tectonicPlates.addTo(myMap);
