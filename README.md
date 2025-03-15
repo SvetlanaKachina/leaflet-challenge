@@ -15,6 +15,7 @@ The USGS is interested in building a new set of tools that will allow them to vi
 1.	Data markers reflect the magnitude of the earthquake by their size and the depth of the earthquake by color. Earthquakes with higher magnitudes should appear larger, and earthquakes with greater depth should appear darker in color.
 *	Included popups that provide additional information about the earthquake when its associated marker is clicked.
 *	Created a legend that will provide context for the map data.
-![image](https://github.com/user-attachments/assets/4496d5b9-89f6-4e61-8032-4b2840642c10)
+![image](https://github.com/user-attachments/assets/ddded108-9c57-42c4-94c7-3104150a4519)
+
 
 
